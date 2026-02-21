@@ -101,8 +101,9 @@ export default function ResultsPage() {
                     </div>
                   </div>
 
-                  {/* Show answer options for multiple/boolean types */}
-                  {(d.type === "multiple" || d.type === "boolean") &&
+                  {/* Show answer options only when incorrect */}
+                  {!isCorrect &&
+                    (d.type === "multiple" || d.type === "boolean") &&
                     d.options && (
                       <div className="ml-7 space-y-2 mb-3">
                         {Object.entries(d.options).map(([key, value]: [string, unknown]) => {
@@ -127,7 +128,7 @@ export default function ResultsPage() {
                                   ✓ Correct
                                 </span>
                               )}
-                              {isUserAnswer && !isCorrect && (
+                              {isUserAnswer && (
                                 <span className="ml-2 text-xs text-red-600 font-medium">
                                   Your answer
                                 </span>
