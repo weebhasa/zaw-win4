@@ -101,6 +101,23 @@ export default function ResultsPage() {
                     </div>
                   </div>
 
+                  {/* Show correct answer only when correct */}
+                  {isCorrect && (d.type === "multiple" || d.type === "boolean") && d.options && (
+                    <div className="ml-7 text-sm">
+                      {Object.entries(d.options).map(([key, value]: [string, unknown]) => {
+                        if (key === d.answer) {
+                          return (
+                            <div key={key} className="p-2 rounded bg-green-50 border border-green-300">
+                              <span className="font-semibold mr-2">{key}.</span>
+                              <span>{String(value)}</span>
+                            </div>
+                          );
+                        }
+                        return null;
+                      })}
+                    </div>
+                  )}
+
                   {/* Show answer options only when incorrect */}
                   {!isCorrect &&
                     (d.type === "multiple" || d.type === "boolean") &&
@@ -142,25 +159,28 @@ export default function ResultsPage() {
                   {/* Show answer for short answer type */}
                   {d.type === "short" && (
                     <div className="ml-7 space-y-2 text-sm">
-                      <div>
-                        <span className="text-muted-foreground">
-                          Your answer:
-                        </span>{" "}
-                        <span
-                          className={
-                            isCorrect ? "text-green-600" : "text-red-600"
-                          }
-                        >
-                          {d.userAnswer}
-                        </span>
-                      </div>
-                      {!isCorrect && (
+                      {isCorrect ? (
                         <div>
                           <span className="text-muted-foreground">
-                            Correct answer:
+                            Answer:
                           </span>{" "}
-                          <span className="text-green-600">{d.answer}</span>
+                          <span className="text-green-600">{d.userAnswer}</span>
                         </div>
+                      ) : (
+                        <>
+                          <div>
+                            <span className="text-muted-foreground">
+                              Your answer:
+                            </span>{" "}
+                            <span className="text-red-600">{d.userAnswer}</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">
+                              Correct answer:
+                            </span>{" "}
+                            <span className="text-green-600">{d.answer}</span>
+                          </div>
+                        </>
                       )}
                     </div>
                   )}
