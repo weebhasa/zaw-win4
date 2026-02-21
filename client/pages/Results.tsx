@@ -23,7 +23,7 @@ export default function ResultsPage() {
 
   const correctCount = currentQuestions.filter(
     (d: any) =>
-      String(answers[d.id]).toUpperCase() === String(d.answer).toUpperCase(),
+      String(d.userAnswer).toUpperCase() === String(d.answer).toUpperCase(),
   ).length;
   const percentage = Math.round((correctCount / currentQuestions.length) * 100);
 
@@ -80,43 +80,110 @@ export default function ResultsPage() {
 
         {currentQuestions.map((d: any) => {
           const isCorrect =
-            String(answers[d.id]).toUpperCase() ===
+            String(d.userAnswer).toUpperCase() ===
             String(d.answer).toUpperCase();
 
           return (
             <div key={d.id} className="border rounded-lg p-4 space-y-3">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center gap-2 mb-3">
                     {isCorrect ? (
                       <CheckCircle2 className="text-green-500 w-5 h-5 flex-shrink-0" />
                     ) : (
                       <XCircle className="text-red-500 w-5 h-5 flex-shrink-0" />
                     )}
-                    <h3 className="font-medium">{d.question}</h3>
-                  </div>
-                  <div className="ml-7 space-y-2 text-sm">
                     <div>
-                      <span className="text-muted-foreground">
-                        Your answer:
-                      </span>{" "}
-                      <span
-                        className={
-                          isCorrect ? "text-green-600" : "text-red-600"
-                        }
-                      >
-                        {answers[d.id]}
-                      </span>
+                      <div className="text-xs uppercase tracking-widest text-muted-foreground mb-1">
+                        Question {d.number}
+                      </div>
+                      <h3 className="font-medium">{d.question}</h3>
                     </div>
-                    {!isCorrect && (
-                      <div>
-                        <span className="text-muted-foreground">
-                          Correct answer:
-                        </span>{" "}
-                        <span className="text-green-600">{d.answer}</span>
+                  </div>
+
+                  {/* Show correct answer only when correct */}
+                  {isCorrect && (d.type === "multiple" || d.type === "boolean") && d.options && (
+                    <div className="ml-7 text-sm">
+                      {Object.entries(d.options).map(([key, value]: [string, unknown]) => {
+                        if (key === d.answer) {
+                          return (
+                            <div key={key} className="p-2 rounded bg-green-50 border border-green-300">
+                              <span className="font-semibold mr-2">{key}.</span>
+                              <span>{String(value)}</span>
+                            </div>
+                          );
+                        }
+                        return null;
+                      })}
+                    </div>
+                  )}
+
+                  {/* Show answer options only when incorrect */}
+                  {!isCorrect &&
+                    (d.type === "multiple" || d.type === "boolean") &&
+                    d.options && (
+                      <div className="ml-7 space-y-2 mb-3">
+                        {Object.entries(d.options).map(([key, value]: [string, unknown]) => {
+                          const isUserAnswer = d.userAnswer === key;
+                          const isCorrectAnswer = d.answer === key;
+
+                          return (
+                            <div
+                              key={key}
+                              className={`p-2 rounded text-sm border ${
+                                isCorrectAnswer
+                                  ? "bg-green-50 border-green-300"
+                                  : isUserAnswer
+                                    ? "bg-red-50 border-red-300"
+                                    : "bg-transparent border-transparent"
+                              }`}
+                            >
+                              <span className="font-semibold mr-2">{key}.</span>
+                              <span>{String(value)}</span>
+                              {isCorrectAnswer && (
+                                <span className="ml-2 text-xs text-green-600 font-medium">
+                                  ✓ Correct
+                                </span>
+                              )}
+                              {isUserAnswer && (
+                                <span className="ml-2 text-xs text-red-600 font-medium">
+                                  Your answer
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
                     )}
-                  </div>
+
+                  {/* Show answer for short answer type */}
+                  {d.type === "short" && (
+                    <div className="ml-7 space-y-2 text-sm">
+                      {isCorrect ? (
+                        <div>
+                          <span className="text-muted-foreground">
+                            Answer:
+                          </span>{" "}
+                          <span className="text-green-600">{d.userAnswer}</span>
+                        </div>
+                      ) : (
+                        <>
+                          <div>
+                            <span className="text-muted-foreground">
+                              Your answer:
+                            </span>{" "}
+                            <span className="text-red-600">{d.userAnswer}</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">
+                              Correct answer:
+                            </span>{" "}
+                            <span className="text-green-600">{d.answer}</span>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

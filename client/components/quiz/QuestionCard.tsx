@@ -6,6 +6,7 @@ export type Question = {
   type: "multiple" | "boolean" | "short";
   question: string;
   options?: string[] | Record<string, string>;
+  answer?: string;
   explanation?: string;
 };
 

@@ -66,10 +66,12 @@ export default function TestPage() {
       sessionFilename,
       sessionIndex,
       totalSessions,
-      currentQuestions: currentQuestions.map((q) => ({
+      currentQuestions: currentQuestions.map((q, index) => ({
         id: q.id,
+        number: start + index + 1,
         question: q.question,
         type: q.type,
+        options: q.options,
         answer: q.answer,
         userAnswer: answers[q.id],
       })),
